@@ -1,0 +1,293 @@
+#1 pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-pod
+  labels:
+    app: web
+spec:
+  containers:
+    - name: nginx
+      image: nginx
+      ports:
+        - containerPort: 80
+---
+#2 rs.yaml
+---
+apiVersion: apps/v1
+kind: ReplicaSet
+metadata:
+  name: nginx-replicaset
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Number of Pod replica
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+---
+#3 dep.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+  labels:
+    app: nginx
+spec:
+  replicas: 3 # Number of Pod replicas
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:latest
+          ports:
+            - containerPort: 80
+---
+#4 cip-svc.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80  # Service Port
+      targetPort: 80  # Pod Port
+---
+#5 np-svc.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80         # Service Port
+      targetPort: 80   # Pod Port
+      nodePort: 30080  # Exposes the service on Node's port 30080
+  type: NodePort
+---
+#6 lb-svc.yaml
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service-lb
+spec:
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      port: 80        # Exposed externally
+      targetPort: 80  # Maps to container port
+  type: LoadBalancer
+---
+#7 ns.yaml
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: test # provide the name for the NameSpace
+---
+#8 sa.yaml
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: test-service-account # provide name for the ServiceAccont
+  namespace: test # provide on which namespace you want create this ServiceAccount
+---
+#9 role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: test-role
+  namespace: test # provide the name of NameSpace where you want to create this Role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "create", "delete"]
+---
+#10 rolebinding.yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: test-rolebinding
+  namespace: test # provide the name of NameSpace where you want to create this Role
+subjects:
+- kind: ServiceAccount
+  name: test-service-account # Name of the ServiceAccount to whom this RoleBinding will be applied
+  namespace: test
+roleRef:
+  kind: Role
+  name: test-role # Name of the Role to whom this RoleBinding will be applied
+  apiGroup: rbac.authorization.k8s.io
+---
+#11 dep-ns-sa.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: test-deployment
+  namespace: test # in which NameSpace you want to launch this Deployment
+spec:
+  replicas: 2 # Number of Pod replicas
+  selector:
+    matchLabels:
+      app: test-app
+  template:
+    metadata:
+      labels:
+        app: test-app
+    spec:
+      serviceAccountName: test-service-account
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+---
+#12 admin-sa.yaml
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin-service-account
+---
+#13 cluster-role.yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: cluster-role
+rules:
+- apiGroups: [""]
+  resources: ["pods"]
+  verbs: ["get", "list", "create", "delete"]
+---
+#14 cluster-rolebinding.yaml
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-rolebinding
+subjects:
+- kind: ServiceAccount
+  name: admin-service-account # Name of the ServiceAccount to whom this ClusterRoleBinding will be applied
+  namespace: test
+- kind: ServiceAccount
+  name: admin-service-account # Name of the ServiceAccount to whom this ClusterRoleBinding will be applied
+  namespace: prod
+roleRef:
+  kind: ClusterRole
+  name: cluster-role # Name of the ClusterRole to whom this ClusterRoleBinding will be applied
+  apiGroup: rbac.authorization.k8s.io
+---
+#15 ephemeral-pod.yaml
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ephemeral-pod
+spec:
+  containers:
+    - name: busybox
+      image: busybox
+      command: ["sleep", "3600"]
+      volumeMounts:
+        - mountPath: /cache
+          name: cache-volume
+  volumes:
+    - name: cache-volume
+      emptyDir: {}
+---
+#16 pv.yaml
+---
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nginx-pv
+spec:
+  capacity:
+    storage: 1Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: hostpath
+  hostPath:
+    path: /mnt/data/nginx
+    type: DirectoryOrCreate
+---
+#17 pvc.yaml
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nginx-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1Gi
+  storageClassName: hostpath
+---
+#18 pvc-dep.yaml
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+        - name: nginx
+          image: nginx
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - mountPath: /usr/share/nginx/html
+              name: nginx-storage
+      volumes: 
+        - name: nginx-storage
+          persistentVolumeClaim:
+            claimName: nginx-pvc
+---

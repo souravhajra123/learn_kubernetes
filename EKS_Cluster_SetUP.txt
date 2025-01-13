@@ -1,0 +1,35 @@
+# At first launch an EC2 instance and add a IAM Role(create the IAM Role following AWS documentation). 
+  Then follow the following steps.
+
+# Install kubectl
+===========================
+$ curl -o kubectl https://amazon-eks.s3.us-west-2.amazonaws.com/1.19.6/2021-01-05/bin/linux/amd64/kubectl
+$ chmod +x kubectl
+$ sudo mv kubectl /usr/local/bin/
+$ kubectl version --client OR $ kubectl
+===========================
+
+# Install eksctl
+===========================
+$ curl --silent --location "https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_$(uname -s)_amd64.tar.gz" | tar xz -C /tmp
+$ cd /tmp
+$ ls
+$ sudo mv /tmp/eksctl /usr/local/bin
+$ eksctl version
+==========================
+
+# Launch EKS Cluster
+===========================
+$ eksctl create cluster --name my-lab-cluster --region ap-south-1 --node-type t2.medium
+===========================
+
+# Delete EKS Cluster
+===========================
+$ eksctl delete cluster my-lab-cluster --region ap-south-1
+===========================
+
+# Update kubeconfig file/ Get access of the existing EKS Cluster from another EC2 instance(this
+  EC2 instance must have the same IAM Role attached to it).
+===========================
+aws eks update-kubeconfig --region <region-code> --name <eks-cluster-name>
+===========================
