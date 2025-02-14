@@ -1,0 +1,30 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: main-menu-html
+data:
+  index.html: |
+    <html>
+      <head>
+        <meta charset="UTF-8">
+        <title>Calculator Options</title>
+        <style>
+          body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin-top: 50px;
+          }
+          button {
+            font-size: 1.2em;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+          }
+        </style>
+      </head>
+      <body>
+        <h1>Select Calculator Type</h1>
+        <button onclick="window.location.href="http://n-cal-pod-svc">Normal Calculator</button>
+        <button onclick="window.location.href="http://s-cal-pod-svc">Scientific Calculator</button>
+      </body>
+    </html>

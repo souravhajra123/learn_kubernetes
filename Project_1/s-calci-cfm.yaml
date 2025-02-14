@@ -1,0 +1,99 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: s-calci-html
+data:
+  index.html: |
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>SCIENTIFIC CALCULATOR</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          text-align: center;
+          margin-top: 30px;
+        }
+        #result {
+          width: 90%;
+          font-size: 1.5em;
+          text-align: right;
+          padding: 10px;
+          margin-bottom: 10px;
+        }
+        button {
+          font-size: 1.2em;
+          width: 18%;
+          padding: 10px;
+          margin: 5px;
+          cursor: pointer;
+        }
+        /* Optional: A style for the bottom row to better space the comma and back buttons */
+        .bottom-row button {
+          width: 40%;
+        }
+      </style>
+    </head>
+    <body>
+      <input type="text" id="result" readonly>
+      <br>
+      <!-- First Row -->
+      <button style="background-color:#f2f2f2" onclick="appendValue('7')">7</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('8')">8</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('9')">9</button>
+      <button style="background-color:#ff9500" onclick="appendValue('/')">/</button>
+      <button style="background-color:#FF00FF" onclick="appendValue('Math.sin(')">sin</button>
+      <br>
+      <!-- Second Row -->
+      <button style="background-color:#f2f2f2" onclick="appendValue('4')">4</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('5')">5</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('6')">6</button>
+      <button style="background-color:#ff9500" onclick="appendValue('*')">*</button>
+      <button style="background-color:#FF00FF" onclick="appendValue('Math.cos(')">cos</button>
+      <br>
+      <!-- Third Row -->
+      <button style="background-color:#f2f2f2" onclick="appendValue('1')">1</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('2')">2</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('3')">3</button>
+      <button style="background-color:#ff9500" onclick="appendValue('-')">-</button>
+      <button style="background-color:#FF00FF" onclick="appendValue('Math.tan(')">tan</button>
+      <br>
+      <!-- Fourth Row -->
+      <button style="background-color:#f2f2f2" onclick="appendValue('0')">0</button>
+      <button style="background-color:#f2f2f2" onclick="appendValue('.')">.</button>
+      <button style="background-color:#34c759" onclick="calculate()">=</button>
+      <button style="background-color:#ff9500" onclick="appendValue('+')">+</button>
+      <button style="background-color:#FF00FF" onclick="appendValue('Math.log(')">log</button>
+      <br>
+      <!-- Fifth Row -->
+      <button style="background-color:#FFC0CB" onclick="appendValue('Math.pow(')">pow</button>
+      <button style="background-color:#FFC0CB" onclick="appendValue('Math.sqrt(')">sqrt</button>
+      <button style="background-color:#FFEBCD" onclick="appendValue('(')">(</button>
+      <button style="background-color:#FFEBCD" onclick="appendValue(')')">)</button>
+      <button style="background-color:#ff3b30" onclick="clearResult()">Clear</button>
+      <br>
+      <!-- Sixth Row: Comma and Back -->
+      <div class="bottom-row">
+        <button onclick="appendValue(',')">,</button>
+        <button onclick="window.location.href="http://main-menu-svc">←</button>
+      </div>
+      
+      <script>
+        function appendValue(value) {
+          document.getElementById('result').value += value;
+        }
+        function calculate() {
+          try {
+            // Ensure all function calls (e.g., Math.sin()) are properly closed.
+            const result = eval(document.getElementById('result').value);
+            document.getElementById('result').value = result;
+          } catch (e) {
+            document.getElementById('result').value = 'Error';
+          }
+        }
+        function clearResult() {
+          document.getElementById('result').value = '';
+        }
+      </script>
+    </body>
+    </html>

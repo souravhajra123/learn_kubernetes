@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: s-cali-cip-svc
+spec:
+  selector:
+    app: s-calci
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80

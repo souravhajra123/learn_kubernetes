@@ -1,0 +1,144 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: n-calci-html
+data:
+  index.html: |
+    <html lang="en">
+    <head>
+      <meta charset="UTF-8">
+      <title>NORMAL CALCULATOR</title>
+      <style>
+        body {
+          font-family: Arial, sans-serif;
+          background: #f0f0f0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+        .calculator {
+          background: #fff;
+          padding: 20px;
+          border-radius: 10px;
+          box-shadow: 2px 2px 10px rgba(0,0,0,0.1);
+        }
+        .display {
+          width: 240px;
+          height: 40px;
+          text-align: right;
+          font-size: 1.2em;
+          padding: 5px;
+          margin-bottom: 10px;
+          border: 1px solid #ccc;
+          border-radius: 5px;
+        }
+        .buttons {
+          display: grid;
+          grid-template-columns: repeat(4, 60px);
+          grid-gap: 10px;
+        }
+        button {
+          width: 60px;
+          height: 60px;
+          font-size: 1.2em;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+          background-color: #f2f2f2;
+          transition: background 0.2s;
+        }
+        button:hover {
+          background-color: #ddd;
+        }
+        button.operator {
+          background-color: #ff9500;
+          color: #fff;
+        }
+        button.operator:hover {
+          background-color: #e08b00;
+        }
+        button.equal {
+          grid-column: span 2;
+          background-color: #34c759;
+          color: #fff;
+        }
+        button.equal:hover {
+          background-color: #30b750;
+        }
+        button.clear {
+          background-color: #ff3b30;
+          color: #fff;
+        }
+        button.clear:hover {
+          background-color: #e03026;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="calculator">
+        <input type="text" id="display" class="display" disabled>
+        <div class="buttons">
+          <button onclick="appendNumber('7')">7</button>
+          <button onclick="appendNumber('8')">8</button>
+          <button onclick="appendNumber('9')">9</button>
+          <button class="operator" onclick="appendOperator('/')">/</button>
+          
+          <button onclick="appendNumber('4')">4</button>
+          <button onclick="appendNumber('5')">5</button>
+          <button onclick="appendNumber('6')">6</button>
+          <button class="operator" onclick="appendOperator('*')">*</button>
+          
+          <button onclick="appendNumber('1')">1</button>
+          <button onclick="appendNumber('2')">2</button>
+          <button onclick="appendNumber('3')">3</button>
+          <button class="operator" onclick="appendOperator('-')">-</button>
+          
+          <button onclick="appendNumber('0')">0</button>
+          <button onclick="appendDot('.')">.</button>
+          <button class="equal" onclick="calculate()">=</button>
+          <button class="operator" onclick="appendOperator('+')">+</button>
+          
+          <button class="clear" onclick="clearDisplay()">C</button>
+	      <button onclick="window.location.href="http://main-menu-svc">←</button>
+        </div>
+      </div>
+      
+      <script>
+        const display = document.getElementById('display');
+        
+        function appendNumber(number) {
+          display.value += number;
+        }
+        
+        function appendOperator(operator) {
+          // Prevent adding an operator at the beginning
+          if (display.value === '') return;
+          // Replace the last operator if already there
+          const lastChar = display.value[display.value.length - 1];
+          if ('+-*/'.includes(lastChar)) {
+            display.value = display.value.slice(0, -1) + operator;
+          } else {
+            display.value += operator;
+          }
+        }
+        
+        function appendDot(dot) {
+          display.value += dot;
+        }
+        
+        function clearDisplay() {
+          display.value = '';
+        }
+        
+        function calculate() {
+          try {
+            // Using eval here for simplicity; be cautious using eval in production code.
+            display.value = eval(display.value);
+          } catch (error) {
+            display.value = 'Error';
+          }
+        }
+      </script>
+    </body>
+    </html>
