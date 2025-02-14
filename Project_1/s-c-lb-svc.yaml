@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sc-lb
+spec:
+  selector:
+    app: s-calci
+  ports:
+    - protocol: TCP
+      port: 80        # Exposed externally
+      targetPort: 80  # Maps to container port
+  type: LoadBalancer
