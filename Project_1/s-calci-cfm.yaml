@@ -75,7 +75,7 @@ data:
       <!-- Sixth Row: Comma and Back -->
       <div class="bottom-row">
         <button onclick="appendValue(',')">,</button>
-        <button onclick="window.location.href='http://<main-menu-NP-svc-external-IP>'">←</button>
+        <button onclick="window.location.href='http://<main-menu-LB-svc-DNS>'">←</button>
       </div>
       
       <script>
