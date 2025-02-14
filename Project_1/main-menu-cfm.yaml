@@ -24,7 +24,7 @@ data:
       </head>
       <body>
         <h1>Select Calculator Type</h1>
-        <button onclick="window.location.href='http://<n-cal-NP-svc-external-IP>'">Normal Calculator</button>
-        <button onclick="window.location.href='http://<s-cal-NP-svc-external-IP>'">Scientific Calculator</button>
+        <button onclick="window.location.href='<http://n-c-LB-svc-DNS>'">Normal Calculator</button>
+        <button onclick="window.location.href='<http://s-c-LB-svc-DNS>'">Scientific Calculator</button>
       </body>
     </html>
