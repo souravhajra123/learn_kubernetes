@@ -100,7 +100,7 @@ data:
           <button class="operator" onclick="appendOperator('+')">+</button>
           
           <button class="clear" onclick="clearDisplay()">C</button>
-	      <button onclick="window.location.href="http://main-menu-svc">←</button>
+	  <button onclick="window.location.href='http://<main-menu-NP-IP>'">←</button>
         </div>
       </div>
       
