@@ -1,7 +1,7 @@
 ## Execute ONLY on "Master Node"
 ===================================
 sudo kubeadm init \
-       --control-plane-endpoint "13.232.50.141:6443" \
+       --control-plane-endpoint "<load_balancer_ip>:6443" \
        --upload-certs \
        --pod-network-cidr=10.244.0.0/16
 
