@@ -95,3 +95,9 @@ sudo su
 **On Master Node:**
 --------------------------------
 kubectl get nodes
+
+##To add multiple nodes, after executing token command execute these commands
+================================================================================
+mkdir -p $HOME/.kube
+ubuntu@ip-172-31-7-11:~$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+ubuntu@ip-172-31-7-11:~$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
