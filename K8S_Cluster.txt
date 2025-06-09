@@ -99,5 +99,9 @@ kubectl get nodes
 ##To add multiple nodes, after executing token command execute these commands
 ================================================================================
 mkdir -p $HOME/.kube
-ubuntu@ip-172-31-7-11:~$ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-ubuntu@ip-172-31-7-11:~$ sudo chown $(id -u):$(id -g) $HOME/.kube/config
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+##Install same CNI plugin to new master
+===========================================
+kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
