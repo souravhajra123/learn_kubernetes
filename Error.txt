@@ -1,0 +1,56 @@
+[etcd] Creating static Pod manifest for "etcd"
+{"level":"warn","ts":"2025-06-10T17:14:51.648065Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:52.149459Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:52.648557Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:53.149816Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:53.64897Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:54.150078Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = FailedPrecondition desc = etcdserver: can only promote a learner member which is in sync with leader"}
+{"level":"warn","ts":"2025-06-10T17:14:54.655816Z","logger":"etcd-client","caller":"v3@v3.5.10/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc00025ee00/172.31.9.236:2379","attempt":0,"error":"rpc error: code = Unavailable desc = etcdserver: rpc not supported for learner"}
+[etcd] Waiting for the new etcd member to join the cluster. This can take up to 40s
+The 'update-status' phase is deprecated and will be removed in a future release. Currently it performs no operation
+[mark-control-plane] Marking the node ip-172-31-8-156 as control-plane by adding the labels: [node-role.kubernetes.io/control-plane node.kubernetes.io/exclude-from-external-load-balancers]
+[mark-control-plane] Marking the node ip-172-31-8-156 as control-plane by adding the taints [node-role.kubernetes.io/control-plane:NoSchedule]
+
+
+====================> /etc/kubernetes/manifests/etcd.yaml <======================================
+$ nano /etc/kubernetes/manifests/etcd.yaml
+        |
+         --->       --initial-cluster=ip-172-31-9-236=https://172.31.9.236:2380,ip-172-31-8-156=https://172.31.8.156:2380
+
+$ ETCDCTL_API=3 etcdctl --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/server.crt \
+  --key=/etc/kubernetes/pki/etcd/server.key \
+  --endpoints=https://127.0.0.1:2379 member list
+
+$ ETCDCTL_API=3 etcdctl \
+  --endpoints=https://127.0.0.1:2379 \
+  --cacert=/etc/kubernetes/pki/etcd/ca.crt \
+  --cert=/etc/kubernetes/pki/etcd/healthcheck-client.crt \
+  --key=/etc/kubernetes/pki/etcd/healthcheck-client.key \
+  member list
+
+====================> /etc/kubernetes/manifests/kube-apiserver.yaml <============================
+
+$ kubectl get clusterrolebinding | grep admin
+
+$kubectl create clusterrolebinding kubernetes-admin \
+  --clusterrole=cluster-admin \
+  --user=kubernetes-admin
+
+
+=============================================================
+{"level":"warn","ts":"2025-06-10T17:43:35.210219Z","caller":"clientv3/retry_interceptor.go:62","msg":"retrying of unary invoker failed","target":"etcd-endpoints://0xc000252e00/127.0.0.1:2379","attempt":0,"error":"rpc error: code = DeadlineExceeded desc = latest balancer error: last connection error: connection error: desc = \"transport: Error while dialing dial tcp 127.0.0.1:2379: connect: connection refused\""}
+Error: context deadline exceeded
+
+===================================================================
+K8S-M1 $ journalctl -u kubelet -f
+Jun 10 17:43:31 ip-172-31-9-236 kubelet[4140]: E0610 17:43:31.636680    4140 controller.go:195] "Failed to update lease" err="Put \"https://43.204.102.5:6443/apis/coordination.k8s.io/v1/namespaces/kube-node-lease/leases/ip-172-31-9-236?timeout=10s\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+Jun 10 17:43:34 ip-172-31-9-236 kubelet[4140]: E0610 17:43:34.982678    4140 mirror_client.go:138] "Failed deleting a mirror pod" err="Timeout: request did not complete within requested timeout - context deadline exceeded" pod="kube-system/etcd-ip-172-31-9-236"
+Jun 10 17:43:35 ip-172-31-9-236 kubelet[4140]: I0610 17:43:35.327990    4140 kubelet.go:1917] "Trying to delete pod" pod="kube-system/etcd-ip-172-31-9-236" podUID="7a51b171-c404-42a9-9c30-302c4c6f8e19"
+Jun 10 17:43:41 ip-172-31-9-236 kubelet[4140]: E0610 17:43:41.637763    4140 controller.go:195] "Failed to update lease" err="Put \"https://43.204.102.5:6443/apis/coordination.k8s.io/v1/namespaces/kube-node-lease/leases/ip-172-31-9-236?timeout=10s\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+Jun 10 17:43:41 ip-172-31-9-236 kubelet[4140]: I0610 17:43:41.637834    4140 controller.go:115] "failed to update lease using latest lease, fallback to ensure lease" err="failed 5 attempts to update lease"
+Jun 10 17:43:50 ip-172-31-9-236 kubelet[4140]: I0610 17:43:50.268419    4140 status_manager.go:853] "Failed to get status for pod" podUID="05a7ba58e7cf738ae42824e91700a443" pod="kube-system/etcd-ip-172-31-9-236" err="the server was unable to return a response in the time allotted, but may still be processing the request (get pods etcd-ip-172-31-9-236)"
+Jun 10 17:43:51 ip-172-31-9-236 kubelet[4140]: E0610 17:43:51.638309    4140 controller.go:145] "Failed to ensure lease exists, will retry" err="Get \"https://43.204.102.5:6443/apis/coordination.k8s.io/v1/namespaces/kube-node-lease/leases/ip-172-31-9-236?timeout=10s\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)" interval="200ms"
+Jun 10 17:44:01 ip-172-31-9-236 kubelet[4140]: E0610 17:44:01.751779    4140 kubelet_node_status.go:544] "Error updating node status, will retry" err="failed to patch status \"{\\\"status\\\":{\\\"$setElementOrder/conditions\\\":[{\\\"type\\\":\\\"NetworkUnavailable\\\"},{\\\"type\\\":\\\"MemoryPressure\\\"},{\\\"type\\\":\\\"DiskPressure\\\"},{\\\"type\\\":\\\"PIDPressure\\\"},{\\\"type\\\":\\\"Ready\\\"}],\\\"conditions\\\":[{\\\"lastHeartbeatTime\\\":\\\"2025-06-10T17:43:51Z\\\",\\\"type\\\":\\\"MemoryPressure\\\"},{\\\"lastHeartbeatTime\\\":\\\"2025-06-10T17:43:51Z\\\",\\\"type\\\":\\\"DiskPressure\\\"},{\\\"lastHeartbeatTime\\\":\\\"2025-06-10T17:43:51Z\\\",\\\"type\\\":\\\"PIDPressure\\\"},{\\\"lastHeartbeatTime\\\":\\\"2025-06-10T17:43:51Z\\\",\\\"type\\\":\\\"Ready\\\"}]}}\" for node \"ip-172-31-9-236\": Patch \"https://43.204.102.5:6443/api/v1/nodes/ip-172-31-9-236/status?timeout=10s\": net/http: request canceled (Client.Timeout exceeded while awaiting headers)"
+Jun 10 17:44:02 ip-172-31-9-236 kubelet[4140]: I0610 17:44:02.445024    4140 kubelet.go:1922] "Deleted mirror pod because it is outdated" pod="kube-system/etcd-ip-172-31-9-236"
+Jun 10 17:44:02 ip-172-31-9-236 kubelet[4140]: I0610 17:44:02.489910    4140 pod_startup_latency_tracker.go:104] "Observed pod startup duration" pod="kube-system/etcd-ip-172-31-9-236" podStartSLOduration=0.489894071 podStartE2EDuration="489.894071ms" podCreationTimestamp="2025-06-10 17:44:02 +0000 UTC" firstStartedPulling="0001-01-01 00:00:00 +0000 UTC" lastFinishedPulling="0001-01-01 00:00:00 +0000 UTC" observedRunningTime="2025-06-10 17:44:02.489520078 +0000 UTC m=+1879.637083415" watchObservedRunningTime="2025-06-10 17:44:02.489894071 +0000 UTC m=+1879.637457357"
